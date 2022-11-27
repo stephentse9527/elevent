@@ -1,0 +1,6 @@
+*.pkl
+*.zip
+.idea/
+__pycache__/
+*.txt
+*.csv
