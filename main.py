@@ -17,6 +17,8 @@ from dataset import GDataset
 from julei import Cluster
 from mydata import Mydataset
 import sys
+import datetime
+import uuid
 
 # 训练模型
 def training(model, train_loader, epoch_id, config, type_m):
@@ -72,12 +74,21 @@ def evaluation(model, helper, testRatings, testNegatives, K, type_m):
     score, hr, ndcg = np.array(u_scores).mean(),np.array(hits).mean(), np.array(ndcgs).mean()
     return score, c, hr, ndcg
 
+def save_log(path, message):
+    origin_out = sys.stdout
+    with open(path, "a") as file:
+        sys.stdout = file
+        file.write("\n")
+        file.write(message)
+    sys.stdout = origin_out
 
 if __name__ == '__main__':
 
-    origin_output = sys
     # 初始化参数
     config = Config()
+    id = uuid.uuid4()
+    log = f"{datetime.datetime.today().strftime('%Y-%m-%d')} run_id-[{id}], config - {vars(config)}"
+    save_log("run_logs.txt", log)
 
     # #聚类,创建群组
     #p = Cluster() #需要实例化类，创建一个对象p
@@ -130,6 +141,7 @@ if __name__ == '__main__':
     print("AGREE 的Embedding 维度为: %d, 迭代次数为: %d, NDCG、HR评估选择topK: %d" %(config.embedding_size, config.epoch, config.topK))
 
     # 训练模型
+    final_group_hr = 0.0
     for epoch in range(config.epoch):
         agree.train() #？
         # 开始训练时间
@@ -150,8 +162,10 @@ if __name__ == '__main__':
         print(
             'Group Iteration %d [%.1f s]: HR = %.4f, '
             'NDCG = %.4f, [%.1f s]' % (epoch, time() - t1, hr, ndcg, time() - t2))
+        final_group_hr = hr
         #print('群组满意度为：%.4f' % (score))
         print('任务完成率为：%.4f' % (c))
+    save_log('run_logs.txt', f"run_id-[{id}] group_hr - {final_group_hr}")
 
 
 
