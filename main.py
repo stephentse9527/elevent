@@ -16,6 +16,7 @@ from dataset import GDataset
 #import matplotlib.pyplot as plt
 from julei import Cluster
 from mydata import Mydataset
+import sys
 
 # 训练模型
 def training(model, train_loader, epoch_id, config, type_m):
@@ -73,6 +74,8 @@ def evaluation(model, helper, testRatings, testNegatives, K, type_m):
 
 
 if __name__ == '__main__':
+
+    origin_output = sys
     # 初始化参数
     config = Config()
 
